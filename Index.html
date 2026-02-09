@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>💌 Valentine Surprise</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      background: linear-gradient(#ffb6c1, #ffe4e9);
+      font-family: "Comic Sans MS", Arial;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      overflow: hidden; /* keep hearts inside screen */
+    }
+
+    .card {
+      position: relative; 
+      z-index: 1;
+      background: white;
+      padding: 40px;
+      border-radius: 25px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      max-width: 400px;
+    }
+
+    h1 {
+      color: #ff4d6d;
+    }
+
+    button {
+      font-size: 18px;
+      padding: 12px 20px;
+      margin: 10px;
+      border: none;
+      border-radius: 15px;
+      cursor: pointer;
+    }
+
+    #yes {
+      background-color: #ff4d6d;
+      color: white;
+    }
+
+    #no {
+      background-color: #ddd;
+      position: relative;
+    }
+
+    input {
+      font-size: 16px;
+      padding: 8px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      margin-top: 10px;
+    }
+
+    /* Chibika floating in the corner */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      width: 150px;
+      height: 150px;
+      background: url('chibika.png') no-repeat center center;
+      background-size: contain;
+      z-index: 0;
+      pointer-events: none;
+      animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    /* Falling hearts container */
+    .heart {
+      position: absolute;
+      width: 25px;
+      height: 25px;
+      background: url('data:image/svg+xml;utf8,<svg fill="%23ff4d6d" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>') no-repeat center center;
+      background-size: contain;
+      z-index: 0;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="card" id="card">
+    <h1>Howdyy! Drop that beautiful name won't you?</h1>
+    <input type="text" id="nameInput" placeholder="Type your name">
+    <br>
+    <button id="startBtn">Next</button>
+  </div>
+
+  <script>
+    const card = document.getElementById("card");
+
+    // Falling hearts
+    function createHeart() {
+      const heart = document.createElement("div");
+      heart.classList.add("heart");
+      heart.style.left = Math.random() * window.innerWidth + "px";
+      heart.style.top = "-30px";
+      document.body.appendChild(heart);
+
+      const speed = 2 + Math.random() * 3;
+      let y = -30;
+      const xMove = (Math.random() - 0.5) * 2;
+
+      function fall() {
+        y += speed;
+        heart.style.top = y + "px";
+        heart.style.left = parseFloat(heart.style.left) + xMove + "px";
+        if (y > window.innerHeight + 30) {
+          heart.remove();
+        } else {
+          requestAnimationFrame(fall);
+        }
+      }
+      fall();
+    }
+
+    setInterval(createHeart, 400); // new heart every 0.4s
+
+    // Valentine logic
+    const startBtn = document.getElementById("startBtn");
+    const nameInput = document.getElementById("nameInput");
+
+    startBtn.addEventListener("click", () => {
+      const name = nameInput.value.trim();
+      if (!name) return alert("Please enter your name!");
+      showFirstQuestion(name);
+    });
+
+    function showFirstQuestion(name) {
+      card.innerHTML = `
+        <h1>Now now ${name}... Do you know what this is about?</h1>
+        <button id="yesBtn">Maybe?...</button>
+        <button id="noBtn">No...</button>
+      `;
+
+      const yesBtn = document.getElementById("yesBtn");
+      const noBtn = document.getElementById("noBtn");
+
+      yesBtn.addEventListener("click", () => {
+        card.innerHTML = `
+          <h1>No, you don’t. </h1>
+          <button id="nextBtn">Continue</button>
+        `;
+        document.getElementById("nextBtn").addEventListener("click", showValentineQuestion);
+      });
+
+      noBtn.addEventListener("click", () => {
+        card.innerHTML = `
+          <h1>That’s cute </h1>
+          <button id="nextBtn">Continue</button>
+        `;
+        document.getElementById("nextBtn").addEventListener("click", showValentineQuestion);
+      });
+    }
+
+    function showValentineQuestion() {
+      card.innerHTML = `
+        <h1>Sooooo.. Will you be my Valentine? 💖</h1>
+        <button id="yes">Yes! </button>
+        <button id="no">Uh no.. </button>
+      `;
+
+      const noBtn = document.getElementById("no");
+      const yesBtn = document.getElementById("yes");
+
+      noBtn.addEventListener("mouseover", () => {
+        const x = Math.random() * 150 - 75;
+        const y = Math.random() * 150 - 75;
+        noBtn.style.transform = `translate(${x}px, ${y}px)`;
+      });
+
+      yesBtn.addEventListener("click", () => {
+        card.innerHTML = `
+          <h1 style="color:#ff4d6d;">YAY 💗</h1>
+          <p style="font-size:20px;">That's what I thought! See you on the 14th then ^^</p>
+        `;
+      });
+    }
+  </script>
+</body>
+</html>
